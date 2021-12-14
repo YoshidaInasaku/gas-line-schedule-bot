@@ -1,3 +1,7 @@
+# Environment
+src/.config.js
 .clasprc.json
 .clasp.json
+
+# Other
 node_modules/
