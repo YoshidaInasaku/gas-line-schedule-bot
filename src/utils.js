@@ -2,9 +2,19 @@
  * カレンダーの登録処理
  * 
  * @param {string} postMsg  ユーザーより投稿されたメッセージ
+ * @param {string} replyToken  リプライトークン
  */
-function registerCalendarEvent(postMsg) {
+function registerCalendarEvent(postMsg, replyToken) {
   const registerDay = postMsg.split('\n');
+  const validate = registerInputValidate(registerDay);
+
+  // 入力に関するバリデーション
+  if (!validate) {
+    return postToLine(
+      '入力された値に誤りがあります\n入力例に従って入力してください\n再度希望の処理を選択し直してください',
+       replyToken
+       );
+  }
   const startTime = new Date(registerDay[0], registerDay[1] - 1, registerDay[2], registerDay[3], registerDay[4]);
   const endTime = new Date(registerDay[0], registerDay[1] - 1, registerDay[2], registerDay[5], registerDay[6]);
   CalendarApp.getCalendarById(user.CALENDAR_ID).createEvent(
@@ -12,6 +22,7 @@ function registerCalendarEvent(postMsg) {
     startTime,
     endTime
   );
+  return postToLine('登録が完了しました', replyToken);
 }
 
 /**
@@ -25,32 +36,50 @@ function updateCalendarEvent() {
  * カレンダーの削除処理
  * 
  * @param {string} postMsg  ユーザーにより投稿されたメッセージ
+ * @param {string} replyToken  リプライトークン
  * @param {Object} cache  キャッシュ
  */
-function deleteCalendarEvent(postMsg, cache) {
+function deleteCalendarEvent(postMsg, replyToken, cache) {
   let eventIdArray = cache.get('eventId');
   eventIdArray = eventIdArray.split(',');
-
-  const selectedNumber = inputValidator(postMsg, eventIdArray);
-  // 入力エラーがあった場合はバリデーションエラーを返す
-  if(selectedNumber === 'error') {
-    cache.put('error', 'deleteNumberInputError');
-    return;
-  }
-  const selectedEventId = eventIdArray[selectedNumber];
-  CalendarApp.getCalendarById(user.CALENDAR_ID).getEventById(selectedEventId).deleteEvent();
   cache.remove('eventId');
+
+  const validateMessage = deleteInputValidate(postMsg, eventIdArray);
+
+  // 数字以外が入力された際の処理
+  if(validateMessage === '数字以外の入力がなされました') {
+    return postToLine('選択肢の数字の中から回答してください\n再度希望の処理を選択してください', replyToken);
+  }
+  // 選択肢以外の数字が入力された際の処理
+  if(validateMessage === '選択肢以外の数字が選択されました') {
+    return postToLine('選択肢にない数字が入力されました\n削除したいイベントは選択肢にある数字から選択してください\n再度希望の処理を選択してください', replyToken);
+  }
+  // 正常な処理
+  if(validateMessage === 'バリデーションエラーはありません') {
+    const selectedEventId = eventIdArray[postMsg - 1];
+    CalendarApp.getCalendarById(user.CALENDAR_ID).getEventById(selectedEventId).deleteEvent();
+    return postToLine('削除が完了しました', replyToken);
+  }
 }
 
 /**
  * 一日の予定を取得する処理
  * 
  * @param {string} postMsg  ユーザーにより投稿されたメッセージ
+ * @param {string} replyToken  リプライトークン
  * @param {Object} cache  キャッシュ
- * @return {string}  一日の予定を時間順に並べた文字列
  */
-function showCalendarEvent(postMsg, cache) {
+function showCalendarEvent(postMsg, replyToken, cache) {
   const selectedDate = postMsg.split('\n');
+  
+  // 入力に関するバリデーション
+  let validate = showInputValidate(selectedDate);
+  if(!validate) {
+    return postToLine(
+      '入力された値に誤りがあります\n入力例に従って入力してください\n再度希望の処理を選択し直してください',
+      replyToken
+      );
+  }
   
   const calendar = CalendarApp.getCalendarById(user.CALENDAR_ID);
   const events = calendar.getEventsForDay(new Date(selectedDate[0], selectedDate[1] - 1, selectedDate[2]));
@@ -58,12 +87,12 @@ function showCalendarEvent(postMsg, cache) {
   let eventIdArray = [];
 
   // イベントが登録されていない日を指定された場合
-  if(events.length === 0) {
-    cache.put('error', 'noEventDay');
-    responseString += '指定された日に予定がありませんでした\n再度操作をやり直してください';
-    return responseString;
+  validate = showEventsListValidate(events);
+  if(!validate) {
+    return postToLine('指定された日に予定がありませんでした\n再度操作をやり直してください', replyToken);
   }
 
+  // カレンダーの情報を取得し、キャッシュにカレンダーIDを保存
   for(let i = 0; i < events.length; i++) {
     const index = i + 1;
     const eventTile = events[i].getTitle();
@@ -75,7 +104,9 @@ function showCalendarEvent(postMsg, cache) {
     eventIdArray.push(eventId);
   }
   cache.put('eventId', eventIdArray);
-  return responseString;
+  cache.put('type', 'delete2');
+
+  return postToLine(`どのイベントを削除しますか\n番号で回答してください\n\n${responseString}`, replyToken);
 }
 
 // カレンダーのリマインド処理
@@ -92,23 +123,6 @@ function remindSchedule() {
 function hhmm_timeDisplay(date) {
   return Utilities.formatDate(new Date(date), 'JST', 'HH時mm分');
 }
-
-/**
- * 入力された文字をバリデーションする
- * 
- * @param {string} inputMsg  入力された文字列
- * @param {Array} eventIdArray  ユーザーが削除を希望している日に登録されている予定IDを値とする配列
- * @return {string}  正しい文字列（半角英数）を返す or キャッシュにエラーを登録
- */
-function inputValidator(inputMsg, eventIdArray) {
-  return inputMsg - 1;
-  // ToDo:数値以外の入力を受け付けないようにする
-  // case1: 数字以外を入力していたらバリデーションエラーを返す
-  // case2: 存在しない数字を入力している場合はバリデーションエラーを返す
-  // case3: 半角英数字以外を入力していたら半角英数字にして返す
-  // case4: 正しく入力されていればそのまま返す
-}
-
 
 // ログとしてSSに書き込む処理
 function log() {

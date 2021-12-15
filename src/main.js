@@ -113,34 +113,15 @@ function execSelectedProcess(postMsg, replyToken, cache, cacheType) {
   switch (cacheType) {
     case 'register':
       cache.remove('type');
-      registerCalendarEvent(postMsg);
-      postToLine('登録が完了しました', replyToken);  // ToDo:バリデーションをつける
+      registerCalendarEvent(postMsg, replyToken);
       break;
     case 'delete1':
       cache.remove('type');
-      const eventList = showCalendarEvent(postMsg, cache);
-      // switch文中にif使用不可（バリデーション専用の関数をこのファイル内で作成する<postToLineもそこで起動させる>）
-      /*
-      if(cache.get('error') !== null) {
-        postToLine(eventList, replyToken);
-        cache.remove('error');
-      }
-      */
-      postToLine(`どのイベントを削除しますか\n番号で回答してください\n\n${eventList}`, replyToken);
-      cache.put('type', 'delete2');
+      showCalendarEvent(postMsg, replyToken, cache);
       break;
     case 'delete2':
-      deleteCalendarEvent(postMsg, cache);
-      // switch文中にif使用不可
-      /*
-      if(cache.get('error') !== null) {
-        postToLine('数字以外の入力はできません\n記載されている番号で入力してください', replyToken);
-        cache.remove('error');
-        return;
-      }
-      */
-      postToLine('削除が完了しました', replyToken);
       cache.remove('type');
+      deleteCalendarEvent(postMsg, replyToken, cache);
       break;
     default:
       postToLine('開発中', replyToken);
