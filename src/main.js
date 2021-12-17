@@ -62,16 +62,10 @@ function getProcessingName(postMsg, replyToken, cache) {
       break;
     case '変更':
       postToLine(
-        '変更したい予定が登録されている日時を教えてください\n「年月日/開始時間/終了時間」の順番でそれぞれ改行して入力\n<以下入力例:2021年11月28日 19時から21時 京都で食事>\n\n20211128\n19\n21',
+        '変更したい予定が登録されている日を教えてください\n<入力例>\n2021年1月28日 19時から21時40分\n食事  の場合\n\n2021\n1\n28',
         replyToken
       );
-      cache.put('type', 'update');
-      /** ToDo
-       * cacheに update を登録して以下の処理をラップ
-       *   1.何時に変更したいかを送信
-       *   2.カレンダー処理
-       *   3.完了の返信
-       */
+      cache.put('type', 'update1');
       break;
     case '削除':
       postToLine(
@@ -82,15 +76,10 @@ function getProcessingName(postMsg, replyToken, cache) {
       break;
     case '確認':
       postToLine(
-        '予定を確認したい日時を教えてください\n入力例：2021年11月28日\n\n20211128',
+        '予定を確認したい日を教えてください\n<入力例>\n2021年11月28日  の場合\n\n2021\n11\n28',
         replyToken
       );
       cache.put('type', 'show');
-      /** ToDo
-       * cacheに 4 を登録して以下の処理をラップ
-       *   1.カレンダー処理
-       *   2.予定を送信
-       */
       break;
     default:
       postToLine(
@@ -115,13 +104,32 @@ function execSelectedProcess(postMsg, replyToken, cache, cacheType) {
       cache.remove('type');
       registerCalendarEvent(postMsg, replyToken);
       break;
-    case 'delete1':
+    case 'update1':
+      showCalendarEvent(postMsg, replyToken, cache, cacheType);
+      break;
+    case 'update2':
       cache.remove('type');
-      showCalendarEvent(postMsg, replyToken, cache);
+      postToLine(
+        'どのように変更したいですか\n<入力例>\n2021年1月28日 19時から21時40分\n食事 を\n2021年1月16日 17時から20時半  に変更したい場合\n\n2021\n1\n16\n17\n0\n20\n30',
+         replyToken);
+      cache.put('type', 'update3');
+      break;
+    case 'update3':
+      cache.remove('type');
+      updateCalendarEvent(postMsg, replyToken, cache);
+      // ToDo
+      //   1.メッセージを受け取り、配列にばらす（バリデーションも加える）
+      //   2.カレンダーIDから指定の予定を変更処理
+      //   3.変更処理完了のメッセージを送信
+    case 'delete1':
+      showCalendarEvent(postMsg, replyToken, cache, cacheType);
       break;
     case 'delete2':
       cache.remove('type');
       deleteCalendarEvent(postMsg, replyToken, cache);
+      break;
+    case 'show':
+      showCalendarEvent(postMsg, replyToken, cache, cacheType);
       break;
     default:
       postToLine('開発中', replyToken);
