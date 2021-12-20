@@ -13,7 +13,7 @@ function doPost(e) {
   let cacheType = cache.get('type');
 
   // ユーザーがしたい処理がキャッシュにない場合は実行
-  if(cacheType === null) {
+  if (cacheType === null) {
     return getProcessingName(postMsg, replyToken, cache);
   }
 
@@ -24,14 +24,14 @@ function doPost(e) {
 /**
  * ラインに返信する
  * 
- * @param {string} msg  ユーザーへ返す文字
- * @param {string} replyToken  リプライトークン
+ * @param {String} msg  ユーザーへ返す文字
+ * @param {String} replyToken  リプライトークン
  */
 function postToLine(msg, replyToken) {
   UrlFetchApp.fetch(user.REPLY_URL, {
     "headers": {
       "Content-Type": "application/json; charset=UTF-8",
-      "AUthorization": "Bearer " + user.ACCESS_TOKEN
+      "Authorization": "Bearer " + user.ACCESS_TOKEN
     },
     "method": "post",
     "payload": JSON.stringify({
@@ -47,8 +47,8 @@ function postToLine(msg, replyToken) {
 /**
  * どんな処理がしたいかをユーザーに聞く
  * 
- * @param {string} postMsg  ユーザーが希望した処理（ex.登録/削除）
- * @param {string} replyToken  ラインへのリプライトークン
+ * @param {String} postMsg  ユーザーが希望した処理（ex.登録/削除）
+ * @param {String} replyToken  ラインへのリプライトークン
  * @param {object} cache  cacheオブジェクト
  */
 function getProcessingName(postMsg, replyToken, cache) {
@@ -93,10 +93,10 @@ function getProcessingName(postMsg, replyToken, cache) {
 /**
  * ユーザーが選択した処理を実行する
  * 
- * @param {string} postMsg  ユーザーが送信たメッセージ
- * @param {string} replyToken  リプライトークン
- * @param {object} cache  cacheオブジェクト
- * @param {object} cacheType  {key: type value:USER_CHOICE_PROCESS}
+ * @param {String} postMsg  ユーザーが送信たメッセージ
+ * @param {String} replyToken  リプライトークン
+ * @param {Object} cache  cacheオブジェクト
+ * @param {Object} cacheType  {key: type value:USER_CHOICE_PROCESS}
  */
 function execSelectedProcess(postMsg, replyToken, cache, cacheType) {
   switch (cacheType) {
@@ -109,18 +109,12 @@ function execSelectedProcess(postMsg, replyToken, cache, cacheType) {
       break;
     case 'update2':
       cache.remove('type');
-      postToLine(
-        'どのように変更したいですか\n<入力例>\n2021年1月28日 19時から21時40分\n食事 を\n2021年1月16日 17時から20時半  に変更したい場合\n\n2021\n1\n16\n17\n0\n20\n30',
-         replyToken);
-      cache.put('type', 'update3');
+      getUpdateCalendarEvent(postMsg, replyToken, cache);
       break;
     case 'update3':
       cache.remove('type');
       updateCalendarEvent(postMsg, replyToken, cache);
-      // ToDo
-      //   1.メッセージを受け取り、配列にばらす（バリデーションも加える）
-      //   2.カレンダーIDから指定の予定を変更処理
-      //   3.変更処理完了のメッセージを送信
+      break;
     case 'delete1':
       showCalendarEvent(postMsg, replyToken, cache, cacheType);
       break;

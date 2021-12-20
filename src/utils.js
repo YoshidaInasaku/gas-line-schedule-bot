@@ -1,8 +1,8 @@
 /**
  * カレンダーの登録処理
  * 
- * @param {string} postMsg  ユーザーより投稿されたメッセージ
- * @param {string} replyToken  リプライトークン
+ * @param {String} postMsg  ユーザーより投稿されたメッセージ
+ * @param {String} replyToken  リプライトークン
  */
 function registerCalendarEvent(postMsg, replyToken) {
   // 入力データを整形（全角英数字は半角英数字にする）
@@ -27,46 +27,73 @@ function registerCalendarEvent(postMsg, replyToken) {
   return postToLine('登録が完了しました', replyToken);
 }
 
-function getUpdateEvent(postMsg, cache) {
-  const eventIdArray = cache.get('eventIdArray')
+/**
+ * 変更したいイベントを取得する処理
+ * 
+ * @param {String} postMsg  ユーザーが送信したデータ
+ * @param {String} replyToken  リプライトークン
+ * @param {Object} cache  キャッシュ
+ */
+function getUpdateCalendarEvent(postMsg, replyToken, cache) {
+  let eventIdArray = cache.get('eventId');
+  eventIdArray = eventIdArray.split(',');
+  cache.remove('eventId');
+
   const validateMessage = specifyEventNumberInputValidate(postMsg, eventIdArray);
 
-  // 数字以外が入力された際の処理
-  if (validateMessage === '数字以外の入力がなされました') {
-    return postToLine('選択肢の数字の中から回答してください\n再度希望の処理を選択してください', replyToken);
-  }
-  // 選択肢以外の数字が入力された際の処理
-  if (validateMessage === '選択肢以外の数字が選択されました') {
-    return postToLine('選択肢にない数字が入力されました\n変更したいイベントは選択肢にある数字から選択してください\n再度希望の処理を選択してください', replyToken);
-  }
   // 正常な処理
-  if (validateMessage === 'バリデーションエラーはありません') {
-    // 半角処理にして、イベントIDを取得、そのままキャッシュへ
+  if (validateMessage !== 'error') {
+    const selectedEventId = validateMessage;
+    cache.put('eventId', selectedEventId);
+    cache.put('type', 'update3');
+    return postToLine(
+      'どのように変更したいですか\n<入力例>\n2021年1月28日 19時から21時40分\n食事 を\n2021年1月16日 17時から20時半  に変更したい場合\n\n2021\n1\n16\n17\n0\n20\n30',
+      replyToken);
+  }
+  // バリデーションエラーだった場合
+  else {
+    return postToLine('選択肢の中から数字で回答してください\n再度希望の処理を選択してください', replyToken);
   }
 }
 
 /**
  * カレンダーの変更処理
+ * 
+ * @param {String} postMsg  ユーザーが送信したデータ
+ * @param {String} replyToken  リプライトークン
+ * @param {Object} cache  キャッシュ
  */
 function updateCalendarEvent(postMsg, replyToken, cache) {
   let updateDay = postMsg.split('\n');
-  updateDay = fullWidthDigitToHalfWidthDigit(updateDay);
-  let validate = updateInputValidate(updateDay);
+  updateDay = fullWidthDigitToHalfWidthDigit_array(updateDay);
+  const eventId = cache.get('eventId');
+  cache.remove('eventId');
 
   // 入力に関するバリデーション
-  if(!validate) {
+  let validate = updateInputValidate(updateDay);
+  if (!validate) {
     return postToLine(
       '入力された値に誤りがあります\n入力例に従って入力してください\n再度希望の処理を選択し直してください',
       replyToken
     );
   }
+
+  // 実際の処理
+  CalendarApp
+    .getCalendarById(user.CALENDAR_ID)
+    .getEventById(eventId)
+    .setTime(
+      new Date(updateDay[0], updateDay[1] - 1, updateDay[2], updateDay[3], updateDay[4]),
+      new Date(updateDay[0], updateDay[1] - 1, updateDay[2], updateDay[5], updateDay[6])
+    );
+  postToLine('変更が完了しました', replyToken);
 }
 
 /**
  * カレンダーの削除処理
  * 
- * @param {string} postMsg  ユーザーにより投稿されたメッセージ
- * @param {string} replyToken  リプライトークン
+ * @param {String} postMsg  ユーザーにより投稿されたメッセージ
+ * @param {String} replyToken  リプライトークン
  * @param {Object} cache  キャッシュ
  */
 function deleteCalendarEvent(postMsg, replyToken, cache) {
@@ -76,30 +103,25 @@ function deleteCalendarEvent(postMsg, replyToken, cache) {
 
   const validateMessage = specifyEventNumberInputValidate(postMsg, eventIdArray);
 
-  // 数字以外が入力された際の処理
-  if (validateMessage === '数字以外の入力がなされました') {
-    return postToLine('選択肢の数字の中から回答してください\n再度希望の処理を選択してください', replyToken);
-  }
-  // 選択肢以外の数字が入力された際の処理
-  if (validateMessage === '選択肢以外の数字が選択されました') {
-    return postToLine('選択肢にない数字が入力されました\n削除したいイベントは選択肢にある数字から選択してください\n再度希望の処理を選択してください', replyToken);
-  }
   // 正常な処理
-  if (validateMessage === 'バリデーションエラーはありません') {
-    const arrayIndex = fullWidthDigitToHalfWidthDigit_string(postMsg) - 1;
-    const selectedEventId = eventIdArray[arrayIndex];
+  if (validateMessage !== 'error') {
+    const selectedEventId = validateMessage;
     CalendarApp.getCalendarById(user.CALENDAR_ID).getEventById(selectedEventId).deleteEvent();
     return postToLine('削除が完了しました', replyToken);
+  }
+  // バリデーションエラーだった場合
+  else {
+    return postToLine('選択肢の中から数字で回答してください\n再度希望の処理を選択し直してください', replyToken);
   }
 }
 
 /**
  * 一日の予定を取得する処理
  * 
- * @param {string} postMsg  ユーザーにより投稿されたメッセージ
- * @param {string} replyToken  リプライトークン
+ * @param {String} postMsg  ユーザーにより投稿されたメッセージ
+ * @param {String} replyToken  リプライトークン
  * @param {Object} cache  キャッシュ
- * @param {string} cacheType  キャッシュに保存されている key:type の値
+ * @param {String} cacheType  キャッシュに保存されている key:type の値
  */
 function showCalendarEvent(postMsg, replyToken, cache, cacheType) {
   let selectedDate = postMsg.split('\n');
@@ -130,10 +152,10 @@ function showCalendarEvent(postMsg, replyToken, cache, cacheType) {
   // カレンダーの情報を取得し、キャッシュにカレンダーIDを保存
   for (let i = 0; i < events.length; i++) {
     const index = i + 1;
-    const eventTile = events[i].getTitle();
+    const eventTitle = events[i].getTitle();
     const startTime = hhmm_timeDisplay(events[i].getStartTime());
     const endTime = hhmm_timeDisplay(events[i].getEndTime());
-    responseString += index + ': ' + eventTile + ' （' + startTime + '〜' + endTime + '）\n';
+    responseString += index + ': ' + eventTitle + ' （' + startTime + '〜' + endTime + '）\n';
 
     // キャッシュの type が delete1 または update1 なら、後続処理のために カレンダーID　をキャッシュに保存
     if (cacheType === 'delete1' || cacheType === 'update1') {
@@ -159,20 +181,55 @@ function showCalendarEvent(postMsg, replyToken, cache, cacheType) {
   }
   if (cacheType === 'show') {
     cache.remove('type');
-    
+
     return postToLine(`その日の予定は以下の通りです\n\n${responseString}`, replyToken);
   }
 }
 
-// カレンダーのリマインド処理
-function remindSchedule() {
-  // 当日7時になったら、その日の予定をリストでラインに通知
+/**
+ * プッシュ通知する
+ * 
+ * @param {String} pushMsg  ユーザーにpush送信するメッセージ
+ */
+function pushNotification(pushMsg) {
+  UrlFetchApp.fetch(user.PUSH_URL, {
+    "headers": {
+      "Content-Type": "application/json; charset=UTF-8",
+      "Authorization": "Bearer " + user.ACCESS_TOKEN
+    },
+    "method": "post",
+    "payload": JSON.stringify({
+      "to": user.USER_ID,
+      "messages": [{
+        "type": "text",
+        "text": pushMsg
+      }]
+    })
+  })
 }
 
-// ログとしてSSに書き込む処理
-function log() {
-  // カレンダーを変更した際にログを書き出す処理
-  // 保存期間も決めて、時期が来たら自動で削除できるようにしておく
+/**
+ * 毎日朝7時にLineに当日の予定のリマインドを送信
+ */
+function remindSchedule() {
+  const schedules = CalendarApp.getCalendarById(user.CALENDAR_ID).getEventsForDay(new Date());
+  let pushMsg = '';
+
+  // 予定がない日の場合
+  if (schedules.length === 0) {
+    pushMsg = '本日の予定はありません';
+    return pushNotification(pushMsg);
+  }
+  // 予定がある日の場合
+  pushMsg = '本日の予定は以下の通りです\n今日も一日がんばりましょう！\n\n';
+  for (let i = 0; i < schedules.length; i++) {
+    const index = i + 1;
+    const eventTitle = schedules[i].getTitle();
+    const startTime = hhmm_timeDisplay(schedules[i].getStartTime());
+    const endTime = hhmm_timeDisplay(schedules[i].getEndTime());
+    pushMsg += index + ': ' + eventTitle + ' （' + startTime + '〜' + endTime + '）\n';
+  }
+  return pushNotification(pushMsg);
 }
 
 /**
