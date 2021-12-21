@@ -187,41 +187,20 @@ function showCalendarEvent(postMsg, replyToken, cache, cacheType) {
 }
 
 /**
- * プッシュ通知する
- * 
- * @param {String} pushMsg  ユーザーにpush送信するメッセージ
- */
-function pushNotification(pushMsg) {
-  UrlFetchApp.fetch(user.PUSH_URL, {
-    "headers": {
-      "Content-Type": "application/json; charset=UTF-8",
-      "Authorization": "Bearer " + user.ACCESS_TOKEN
-    },
-    "method": "post",
-    "payload": JSON.stringify({
-      "to": user.USER_ID,
-      "messages": [{
-        "type": "text",
-        "text": pushMsg
-      }]
-    })
-  })
-}
-
-/**
- * 毎日朝7時にLineに当日の予定のリマインドを送信
+ * 明日の予定を23時ごろにLineでリマインド送信
  */
 function remindSchedule() {
-  const schedules = CalendarApp.getCalendarById(user.CALENDAR_ID).getEventsForDay(new Date());
-  let pushMsg = '';
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + 1);
+  const schedules = CalendarApp.getCalendarById(user.CALENDAR_ID).getEventsForDay(targetDate);
+  let pushMsg = '明日の予定は以下の通りです！\nのんびりいきましょう！\n\n';
 
   // 予定がない日の場合
   if (schedules.length === 0) {
-    pushMsg = '本日の予定はありません';
+    pushMsg = '◎予定なし';
     return pushNotification(pushMsg);
   }
   // 予定がある日の場合
-  pushMsg = '本日の予定は以下の通りです\n今日も一日がんばりましょう！\n\n';
   for (let i = 0; i < schedules.length; i++) {
     const index = i + 1;
     const eventTitle = schedules[i].getTitle();

@@ -45,6 +45,28 @@ function postToLine(msg, replyToken) {
 }
 
 /**
+ * プッシュ通知する
+ * 
+ * @param {String} pushMsg  ユーザーにpush送信するメッセージ
+ */
+ function pushNotification(pushMsg) {
+  UrlFetchApp.fetch(user.PUSH_URL, {
+    "headers": {
+      "Content-Type": "application/json; charset=UTF-8",
+      "Authorization": "Bearer " + user.ACCESS_TOKEN
+    },
+    "method": "post",
+    "payload": JSON.stringify({
+      "to": user.USER_ID,
+      "messages": [{
+        "type": "text",
+        "text": pushMsg
+      }]
+    })
+  })
+}
+
+/**
  * どんな処理がしたいかをユーザーに聞く
  * 
  * @param {String} postMsg  ユーザーが希望した処理（ex.登録/削除）
