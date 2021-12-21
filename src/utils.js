@@ -146,7 +146,7 @@ function showCalendarEvent(postMsg, replyToken, cache, cacheType) {
   validate = eventsListValidate(events);
   if (!validate) {
     cache.remove('type');
-    return postToLine('指定された日に予定がありませんでした\n再度操作をやり直してください', replyToken);
+    return postToLine('◎その日に予定はありません', replyToken);
   }
 
   // カレンダーの情報を取得し、キャッシュにカレンダーIDを保存
