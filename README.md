@@ -57,7 +57,7 @@ Line上でスケジュール管理ができるツールです<br />
   ```
 &emsp; 1-6. ターミナル上に URL が出力されるので、それをコピーして、ブラウザ（クローム）に貼り付け<br />
 　　&emsp; &nbsp; → ブラウザ上で 承認 が求められるので、「許可」を押す<br />
-&emsp; 1-7. 許可を押すと、ブラウザ（クローム）にて、コードが出力されるので、それをコピーして、ターミナルにペースト<br />
+&emsp; 1-7. ブラウザ（クローム）にてコードが出力されるので、それをコピーしてターミナルにペースト<br />
 &emsp; 1-8. .clasprc.jsonに、下記のように認証情報が記載されていることを確認する
   ```json
    {"token":{"access_token":"以下略....."}}
@@ -84,7 +84,7 @@ Line上でスケジュール管理ができるツールです<br />
 ### 3. Messaging APIの設定<br />
 &emsp; 3-1. Messaging API を使用するため、[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/getting-started/#using-console)の説明を参考に、チャンネルを作成してください<br />
 &emsp; 3-2. チャンネルアクセストークンを発行してください（参考：[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/channel-access-tokens/#long-lived-channel-access-tokens)）<br />
-&emsp; 3-3. 作成したGoogle Apps Script を「公開アプリケーション」で公開し、「WebアプリとしてデプロイしたURL」をコピーする<br />
+&emsp; 3-3. 作成したGoogle Apps Script を「公開アプリケーション」で公開し、「デプロイしたURL」をコピーする<br />
 ToDo:画像を貼る<br />
 
 &emsp; 3-4. Webhook URL を設定する（参考：[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/building-bot/#setting-webhook-url)）<br />
