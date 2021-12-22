@@ -79,7 +79,7 @@ Line上でスケジュール管理ができるツールです<br />
     $clasp push {Google Apps Script の URL(https://script.google.com/home/projects/{プロジェクトID}/edit 全文)}
    ```
 &emsp; 2-5. Google Apps Script の Webエディタ の画面に行き、コードが反映されているか確認する<br />
-&emsp; 2-6. Google Apps Script の Webエディタ の画面に進み、トリガーを設定<br />
+&emsp; 2-6. Google Apps Script の Webエディタ にて、トリガーを設定<br />
   &emsp; &emsp; → 関数「remindSchedule」 を 「午後11時〜午後12時」 に設定<br />
   ToDO:画像を貼る
 <br/>
@@ -88,8 +88,6 @@ Line上でスケジュール管理ができるツールです<br />
 &emsp; 3-1. Messaging API を使用するため、[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/getting-started/#using-console)の説明を参考に、チャンネルを作成してください<br />
 &emsp; 3-2. チャンネルアクセストークンを発行してください（参考：[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/channel-access-tokens/#long-lived-channel-access-tokens)）<br />
 &emsp; 3-3. 作成したGoogle Apps Script を「公開アプリケーション」で公開し、「デプロイしたURL」をコピーする<br />
-![画面収録 2021-12-22 14 52 30](https://user-images.githubusercontent.com/65550020/147043041-11e84a1c-3790-41e3-8434-252573c71182.gif)<br />
-
 &emsp; 3-4. Webhook URL を設定する（参考：[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/building-bot/#setting-webhook-url)）<br />
 &emsp; 3-5. 自分で作成した Bot と友達になる（参考:[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/building-bot/#add-your-line-official-account-as-friend)）<br />
 <br />
