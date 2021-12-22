@@ -197,7 +197,7 @@ function remindSchedule() {
 
   // 予定がない日の場合
   if (schedules.length === 0) {
-    pushMsg = '◎予定なし';
+    pushMsg += '◎予定なし';
     return pushNotification(pushMsg);
   }
   // 予定がある日の場合
