@@ -88,7 +88,7 @@ Line上でスケジュール管理ができるツールです<br />
 &emsp; 3-1. Messaging API を使用するため、[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/getting-started/#using-console)の説明を参考に、チャンネルを作成してください<br />
 &emsp; 3-2. チャンネルアクセストークンを発行してください（参考：[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/channel-access-tokens/#long-lived-channel-access-tokens)）<br />
 &emsp; 3-3. 作成したGoogle Apps Script を「公開アプリケーション」で公開し、「デプロイしたURL」をコピーする<br />
-ToDo:画像を貼る<br />
+![画面収録 2021-12-22 14 52 30](https://user-images.githubusercontent.com/65550020/147043041-11e84a1c-3790-41e3-8434-252573c71182.gif)<br />
 
 &emsp; 3-4. Webhook URL を設定する（参考：[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/building-bot/#setting-webhook-url)）<br />
 &emsp; 3-5. 自分で作成した Bot と友達になる（参考:[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/building-bot/#add-your-line-official-account-as-friend)）<br />
