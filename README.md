@@ -79,6 +79,9 @@ Line上でスケジュール管理ができるツールです<br />
     $clasp push {Google Apps Script の URL(https://script.google.com/home/projects/{プロジェクトID}/edit 全文)}
    ```
 &emsp; 2-5. Google Apps Script の Webエディタ の画面に行き、コードが反映されているか確認する<br />
+&emsp; 2-6. Google Apps Script の Webエディタ の画面に進み、トリガーを設定<br />
+  &emsp; &emsp; → 関数「remindSchedule」 を 「午後11時〜午後12時」 に設定<br />
+  ToDO:画像を貼る
 <br/>
 
 ### 3. Messaging APIの設定<br />
