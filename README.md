@@ -3,6 +3,9 @@ Line上でスケジュール管理ができるツールです<br />
 カレンダーアプリの代わりになれるものを目指しました<br />
 <br />
 
+本ツールは Google Apps Script を用いて開発を行っているので、利用するためにはセットアップが必要です<br />
+<br />
+
 ## ■機能
 主な機能は以下の5つです
 - <b>スケジュール登録</b>
@@ -13,9 +16,22 @@ Line上でスケジュール管理ができるツールです<br />
 <br />
 
 ## ■デモ動画
-※ToDo：動画載せる<br />
-<br />
+操作したい内容をメッセージとして送信すると（登録なら「登録」と送信されると）、処理に進みます<br />
+その際、[リッチメニュー](https://qiita.com/bow_arrow/items/32ac5d2b4c67bd0c1dc2)を作成しておくと便利です
 
+### 1. 登録 &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; 2.変更 &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; 3.削除 &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; 4.確認
+![register](https://user-images.githubusercontent.com/65550020/147192879-4d4af2fc-6e49-42d1-be01-664eb7598864.gif)
+ &emsp; &emsp; &emsp; &emsp;
+ ![update](https://user-images.githubusercontent.com/65550020/147195101-ef4488b2-93d5-4330-b412-233ff263e2d1.gif)
+ &emsp; &emsp; &emsp; &emsp;
+ ![delete](https://user-images.githubusercontent.com/65550020/147195288-7102f3ff-58cf-4227-b8d5-40ba3df18632.gif)
+ &emsp; &emsp; &emsp; &emsp;
+ ![show](https://user-images.githubusercontent.com/65550020/147195332-2f4f7b15-abd3-4712-adf9-b9417f09338a.gif)
+ <br />
+ 
+また追って説明しますが、Google Apps Script 上でトリガーを設定すると、前日の11時に次の日の日程を通知してくれます<br />
+ <br />
+  
 ## ■本ツールを使うメリット
 - スマホの容量がいっぱいでも、Lineさえあれば別途カレンダーアプリをインストールしなくて済む<br />
 - 次の日の予定を前日にラインで通知してくれるので、予定を忘れなくても済む
@@ -81,8 +97,8 @@ Line上でスケジュール管理ができるツールです<br />
 &emsp; 2-5. Google Apps Script の Webエディタ の画面に行き、コードが反映されているか確認する<br />
 &emsp; 2-6. Google Apps Script の Webエディタ にて、トリガーを設定<br />
   &emsp; &emsp; → 関数「remindSchedule」 を 「午後11時〜午後12時」 に設定<br />
-  ToDO:画像を貼る
-<br/>
+&emsp; ![trigger](https://user-images.githubusercontent.com/65550020/147196252-e3256fe7-5841-41ed-8443-29be898c4429.gif)
+<br /><br/>
 
 ### 3. Messaging APIの設定<br />
 &emsp; 3-1. Messaging API を使用するため、[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/getting-started/#using-console)の説明を参考に、チャンネルを作成してください<br />
@@ -90,6 +106,7 @@ Line上でスケジュール管理ができるツールです<br />
 &emsp; 3-3. 作成したGoogle Apps Script を「公開アプリケーション」で公開し、「デプロイしたURL」をコピーする<br />
 &emsp; 3-4. Webhook URL を設定する（参考：[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/building-bot/#setting-webhook-url)）<br />
 &emsp; 3-5. 自分で作成した Bot と友達になる（参考:[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/building-bot/#add-your-line-official-account-as-friend)）<br />
+&emsp; 3-6. お好みでリッチURLを作成して、メニューバーを作成してください（参考：[Line公式Doc](https://developers.line.biz/ja/docs/messaging-api/using-rich-menus/)）<br />
 <br />
 
 ### 4..confi.jsの作成<br />
