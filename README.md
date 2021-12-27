@@ -3,6 +3,11 @@ Line上でスケジュール管理ができるツールです<br />
 カレンダーアプリの代わりになれるものを目指しました<br />
 <br />
 
+仕組みは下記スライドの通りです<br />
+<br />
+<img src=https://user-images.githubusercontent.com/65550020/147436322-256e5b4a-9200-4f05-91d0-45223e803b49.jpg width=450 />
+<br />
+
 本ツールは Google Apps Script を用いて開発を行っているので、利用するためにはセットアップが必要です<br />
 <br />
 
@@ -19,18 +24,31 @@ Line上でスケジュール管理ができるツールです<br />
 操作したい内容をメッセージとして送信すると（登録なら「登録」と送信されると）、処理に進みます<br />
 その際、[リッチメニュー](https://qiita.com/bow_arrow/items/32ac5d2b4c67bd0c1dc2)を作成しておくと便利です
 
-### 1. 登録 &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; 2.変更 &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; 3.削除 &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; 4.確認
+### 1. 登録
+メニューより「登録」をクリックすると、Googleカレンダーへの登録処理に進みます<br />
+登録したい日時とカレンダータイトルを入力すると、予定を登録することができます<br />
+<br />
 ![register](https://user-images.githubusercontent.com/65550020/147192879-4d4af2fc-6e49-42d1-be01-664eb7598864.gif)
- &emsp; &emsp; &emsp; &emsp;
- ![update](https://user-images.githubusercontent.com/65550020/147195101-ef4488b2-93d5-4330-b412-233ff263e2d1.gif)
- &emsp; &emsp; &emsp; &emsp;
- ![delete](https://user-images.githubusercontent.com/65550020/147195288-7102f3ff-58cf-4227-b8d5-40ba3df18632.gif)
- &emsp; &emsp; &emsp; &emsp;
- ![show](https://user-images.githubusercontent.com/65550020/147195332-2f4f7b15-abd3-4712-adf9-b9417f09338a.gif)
+### 2. 変更
+メニューより「変更」をクリックすると、Googleカレンダーの予定変更処理に進みます<br />
+変更したい日時を指定後、変更したいイベントを選択し、変更内容を入力すると、予定を変更することができます<br />
+<br />
+![update](https://user-images.githubusercontent.com/65550020/147195101-ef4488b2-93d5-4330-b412-233ff263e2d1.gif)
+### 3 .削除
+メニューより「削除」をクリックすると、予定の削除処理に進みます<br />
+削除したい日時を指定後、削除したいイベントを選択すると、グーグルカレンダーの予定を削除することができます<br />
+<br />
+![delete](https://user-images.githubusercontent.com/65550020/147195288-7102f3ff-58cf-4227-b8d5-40ba3df18632.gif)
+### 4. 確認
+メニューより「確認」をクリックすると、Googleカレンダーの予定確認処理に進みます<br />
+確認したい日付を入力すると、予定を確認することができます<br />
+<br />
+![show](https://user-images.githubusercontent.com/65550020/147195332-2f4f7b15-abd3-4712-adf9-b9417f09338a.gif)
  <br />
- 
-また追って説明しますが、Google Apps Script 上でトリガーを設定すると、前日の11時に次の日の日程を通知してくれます<br />
  <br />
+また、Google Apps Script 上でトリガーを設定すると（設定方法は後述）、前日の11時ごろに次の日の日程を通知してくれます<br /><br />
+<img src=https://user-images.githubusercontent.com/65550020/147432097-e62f2417-c006-43b5-a394-2ee244183748.jpg width=320) />
+<br /><br />
   
 ## ■本ツールを使うメリット
 - スマホの容量がいっぱいでも、Lineさえあれば別途カレンダーアプリをインストールしなくて済む<br />
